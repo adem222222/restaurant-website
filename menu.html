@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مطعم البركة - نظام الطلبات المتكامل</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #d4af37;
+      --secondary: #8b0000;
+      --accent: #c53030;
+      --light: #f8f8f8;
+      --dark: #222;
+      --darker: #1a1a1a;
+      --gray: #555;
+      --light-gray: #eaeaea;
+      --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+      --transition: all 0.3s ease;
+      --border-radius: 12px;
+      --border-radius-sm: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: linear-gradient(135deg, #f9f9f9 0%, #f1f1f1 100%);
+      color: var(--dark);
+      direction: rtl;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1514933651103-005eec06c04b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80') no-repeat center/cover;
+      opacity: 0.05;
+      z-index: -1;
+    }
+
+    /* Header Styles */
+    header {
+      background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-bottom: 4px solid var(--primary);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      z-index: 2;
+      padding: 20px;
+      animation: fadeInDown 1s ease;
+    }
+
+    .logo {
+      font-size: 3.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      text-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .logo i {
+      color: var(--primary);
+      font-size: 4rem;
+    }
+
+    .contact-info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 12px 20px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      animation: pulse 2s infinite;
+      transition: var(--transition);
+      border: 2px solid var(--primary);
+    }
+
+    .contact-info:hover {
+      background: var(--primary);
+      transform: scale(1.05);
+    }
+
+    .contact-info a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+    }
+
+    /* Navigation */
+    nav {
+      background-color: var(--darker);
+      padding: 0.8rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    .nav-links li {
+      position: relative;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+      padding: 8px 15px;
+      border-radius: 30px;
+      display: block;
+      font-size: 1.1rem;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      background-color: var(--primary);
+      color: var(--darker);
+    }
+
+    .cart-icon {
+      position: relative;
+      cursor: pointer;
+      font-size: 1.6rem;
+      color: white;
+      transition: var(--transition);
+    }
+
+    .cart-icon:hover {
+      color: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background-color: var(--accent);
+      color: white;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.9rem;
+      font-weight: bold;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-title {
+      text-align: center;
+      margin: 2.5rem 0;
+      color: var(--secondary);
+      position: relative;
+      padding-bottom: 15px;
+      font-size: 2.2rem;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+    }
+
+    /* Menu Tabs */
+    .menu-tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+      border: none;
+      padding: 12px 25px;
+      margin: 0 5px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: var(--transition);
+      border-radius: 30px;
+      font-size: 1.1rem;
+      color: var(--dark);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 2px solid transparent;
+    }
+
+    .tab-btn i {
+      font-size: 1.3rem;
+      color: var(--primary);
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      color: white;
+      box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .tab-btn:hover i {
+      color: white;
+    }
+
+    /* Menu Items Grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .menu-item {
+      background-color: white;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      position: relative;
+      border: 1px solid var(--light-gray);
+    }
+
+    .menu-item:hover {
+      transform: translateY(-10px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+
+    .item-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: var(--accent);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      z-index: 2;
+    }
+
+    .item-image {
+      height: 220px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .item-image::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40%;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    }
+
+    .item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .menu-item:hover .item-image img {
+      transform: scale(1.1);
+    }
+
+    .item-details {
+      padding: 20px;
+      position: relative;
+    }
+
+    .item-title {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: var(--secondary);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+    }
+
+    .item-price {
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1.4rem;
+    }
+
+    .item-description {
+      color: var(--gray);
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .add-to-cart {
+      background: linear-gradient(135deg, var(--primary) 0%, #e6c158 100%);
+      color: var(--darker);
+      border: none;
+      padding: 12px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      width: 100%;
+      transition: var(--transition);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
+    }
+
+    .add-to-cart:hover {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(139, 0, 0, 0.3);
+    }
+
+    /* Shopping Cart Modal */
+    .cart-modal {
+      position: fixed;
+      top: 0;
+      right: -450px;
+      width: 420px;
+      height: 100vh;
+      background-color: white;
+      box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      transition: right 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      border-left: 4px solid var(--primary);
+    }
+
+    .cart-modal.open {
+      right: 0;
+    }
+
+    .cart-header {
+      background: linear-gradient(135deg, var(--darker) 0%, #333 100%);
+      color: white;
+      padding: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .close-cart {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .close-cart:hover {
+      color: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .cart-item {
+      display: flex;
+      border-bottom: 1px solid var(--light-gray);
+      padding: 18px 0;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .cart-item-image {
+      width: 90px;
+      height: 90px;
+      border-radius: var(--border-radius-sm);
+      overflow: hidden;
+      margin-left: 15px;
+      flex-shrink: 0;
+      border: 2px solid var(--light-gray);
+    }
+
+    .cart-item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cart-item-details {
+      flex: 1;
+    }
+
+    .cart-item-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 1.2rem;
+      color: var(--secondary);
+    }
+
+    .cart-item-price {
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .cart-item-quantity {
+      display: flex;
+      align-items: center;
+      margin-top: 12px;
+      gap: 8px;
+    }
+
+    .quantity-btn {
+      width: 30px;
+      height: 30px;
+      background: var(--light);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+
+    .quantity-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .quantity-value {
+      margin: 0 5px;
+      font-weight: bold;
+      min-width: 30px;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+
+    .remove-item {
+      background: none;
+      border: none;
+      color: #ff5555;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition);
+    }
+
+    .remove-item:hover {
+      color: #ff0000;
+      transform: scale(1.05);
+    }
+
+    .cart-footer {
+      padding: 1.5rem;
+      background-color: #f9f9f9;
+      border-top: 1px solid var(--light-gray);
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      color: var(--secondary);
+    }
+
+    .checkout-btn {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      width: 100%;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 1.2rem;
+      box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .checkout-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(139, 0, 0, 0.4);
+    }
+
+    /* Checkout Modal */
+    .checkout-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .checkout-modal.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .checkout-container {
+      background-color: white;
+      width: 90%;
+      max-width: 550px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      border: 3px solid var(--primary);
+      animation: popIn 0.4s ease;
+    }
+
+    .checkout-header {
+      background: linear-gradient(135deg, var(--darker) 0%, #333 100%);
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      font-size: 1.5rem;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .checkout-body {
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: var(--secondary);
+      font-size: 1.1rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid var(--light-gray);
+      border-radius: var(--border-radius-sm);
+      font-family: inherit;
+      font-size: 1.1rem;
+      transition: var(--transition);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+    }
+
+    .checkout-footer {
+      padding: 1.5rem;
+      background-color: #f9f9f9;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--light-gray);
+    }
+
+    .modal-btn {
+      padding: 14px 30px;
+      border: none;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1rem;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cancel-btn {
+      background: linear-gradient(135deg, #e0e0e0 0%, #d1d1d1 100%);
+      color: var(--dark);
+    }
+
+    .cancel-btn:hover {
+      background: linear-gradient(135deg, #d1d1d1 0%, #c2c2c2 100%);
+      transform: translateY(-3px);
+    }
+
+    .confirm-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, #e6c158 100%);
+      color: var(--darker);
+    }
+
+    .confirm-btn:hover {
+      background: linear-gradient(135deg, #e6c158 0%, #d9b44a 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+    }
+
+    /* Admin Panel */
+    .admin-login {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      padding: 3rem;
+      max-width: 500px;
+      margin: 5rem auto;
+      text-align: center;
+      border: 2px solid var(--primary);
+      animation: fadeIn 0.8s ease;
+    }
+
+    .admin-login h2 {
+      color: var(--secondary);
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+
+    .admin-login .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-login .submit-btn {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: var(--border-radius-sm);
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+      width: 100%;
+      transition: var(--transition);
+      margin-top: 1rem;
+    }
+
+    .admin-login .submit-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+    }
+
+    .admin-panel {
+      background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
+      padding: 2.5rem;
+      margin-top: 2rem;
+      border: 2px solid var(--primary);
+      display: none;
+    }
+
+    .admin-panel.active {
+      display: block;
+      animation: fadeIn 0.8s ease;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 2px solid var(--light-gray);
+    }
+
+    .admin-title {
+      color: var(--secondary);
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logout-btn {
+      background: linear-gradient(135deg, var(--accent) 0%, #b52b2b 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .logout-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(197, 48, 48, 0.3);
+    }
+
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+      border: 2px solid transparent;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+
+    .stat-icon {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+
+    .stat-value {
+      font-size: 2.8rem;
+      font-weight: bold;
+      color: var(--secondary);
+      margin: 15px 0;
+    }
+
+    .stat-label {
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+
+    .admin-tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--light-gray);
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .admin-tab {
+      padding: 12px 25px;
+      cursor: pointer;
+      font-weight: bold;
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+
+    .admin-tab.active {
+      border-bottom: 3px solid var(--primary);
+      color: var(--secondary);
+    }
+
+    .admin-content {
+      display: none;
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .admin-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 1.05rem;
+    }
+
+    .orders-table th,
+    .orders-table td {
+      padding: 15px;
+      text-align: right;
+      border-bottom: 1px solid var(--light-gray);
+    }
+
+    .orders-table th {
+      background-color: var(--light);
+      font-weight: bold;
+      color: var(--secondary);
+    }
+
+    .orders-table tr:hover {
+      background-color: rgba(212, 175, 55, 0.05);
+    }
+
+    .order-status {
+      padding: 8px 15px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .status-pending {
+      background-color: #ffecb3;
+      color: #ff9800;
+    }
+
+    .status-confirmed {
+      background-color: #c8e6c9;
+      color: #388e3c;
+    }
+
+    .status-completed {
+      background-color: #bbdefb;
+      color: #1976d2;
+    }
+
+    .action-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: var(--border-radius-sm);
+      cursor: pointer;
+      margin-left: 5px;
+      font-weight: bold;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-confirm {
+      background: linear-gradient(135deg, #4caf50 0%, #43a047 100%);
+      color: white;
+    }
+
+    .btn-complete {
+      background: linear-gradient(135deg, #2196f3 0%, #1e88e5 100%);
+      color: white;
+    }
+
+    .btn-delete {
+      background: linear-gradient(135deg, var(--accent) 0%, #b52b2b 100%);
+      color: white;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .order-details {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: var(--border-radius-sm);
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+    }
+
+    /* Footer */
+    footer {
+      background: linear-gradient(135deg, var(--darker) 0%, #1a1a1a 100%);
+      color: white;
+      padding: 3rem 0 2rem;
+      text-align: center;
+      margin-top: 5rem;
+      border-top: 4px solid var(--primary);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      padding: 0 1.5rem;
+    }
+
+    .footer-section {
+      text-align: right;
+    }
+
+    .footer-section h3 {
+      margin-bottom: 1.5rem;
+      color: var(--primary);
+      font-size: 1.5rem;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .footer-section h3::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 50px;
+      height: 3px;
+      background-color: var(--primary);
+    }
+
+    .footer-section p {
+      margin-bottom: 10px;
+      line-height: 1.8;
+      color: #ddd;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .social-icons a {
+      color: white;
+      font-size: 1.4rem;
+      transition: var(--transition);
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .social-icons a:hover {
+      background: var(--primary);
+      color: var(--darker);
+      transform: translateY(-5px);
+    }
+
+    .copyright {
+      text-align: center;
+      padding-top: 2.5rem;
+      color: #aaa;
+      font-size: 1rem;
+      margin-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2rem 1rem 0;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .logo {
+        font-size: 2.8rem;
+      }
+
+      .nav-links {
+        gap: 10px;
+      }
+
+      .nav-links a {
+        padding: 8px 12px;
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 2.3rem;
+      }
+
+      .logo i {
+        font-size: 3rem;
+      }
+
+      .contact-info {
+        position: relative;
+        top: 0;
+        left: 0;
+        margin: 0 auto 20px;
+        width: fit-content;
+      }
+
+      .nav-container {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .cart-modal {
+        width: 100%;
+      }
+
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+
+      .footer-section {
+        text-align: center;
+      }
+
+      .footer-section h3::after {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .social-icons {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .menu-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-tabs {
+        flex-direction: column;
+      }
+
+      .admin-tab {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <div class="contact-info">
+      <a href="tel:0698744755">
+        <i class="fas fa-phone"></i> 0698744755
+      </a>
+    </div>
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-utensils"></i>
+        مطعم البركة
+      </div>
+      <h1>تجربة طعام استثنائية</h1>
+      <p>أطباق متنوعة من أشهى المأكولات والحلويات والمشروبات</p>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <ul class="nav-links">
+        <li><a href="#" class="active">الرئيسية</a></li>
+        <li><a href="#meals">الوجبات</a></li>
+        <li><a href="#drinks">المشروبات</a></li>
+        <li><a href="#desserts">الحلويات</a></li>
+        <li><a href="#" id="adminLink">لوحة التحكم</a></li>
+      </ul>
+      <div class="cart-icon" id="cartIcon">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h2 class="section-title">قائمتنا الشهية</h2>
+
+    <!-- Menu Tabs -->
+    <div class="menu-tabs">
+      <button class="tab-btn active" data-category="all">
+        <i class="fas fa-utensils"></i> الكل
+      </button>
+      <button class="tab-btn" data-category="meals">
+        <i class="fas fa-drumstick-bite"></i> الوجبات
+      </button>
+      <button class="tab-btn" data-category="drinks">
+        <i class="fas fa-glass-martini-alt"></i> المشروبات
+      </button>
+      <button class="tab-btn" data-category="desserts">
+        <i class="fas fa-ice-cream"></i> الحلويات
+      </button>
+    </div>
+
+    <!-- Menu Items Grid -->
+    <div class="menu-grid" id="menuGrid">
+      <!-- Menu items will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Admin Login -->
+  <div class="container">
+    <div class="admin-login" id="adminLogin">
+      <h2><i class="fas fa-lock"></i> دخول المالك</h2>
+      <div class="form-group">
+        <label>اسم المستخدم</label>
+        <input type="text" id="adminUsername" placeholder="اسم المستخدم">
+      </div>
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="adminPassword" placeholder="كلمة المرور">
+      </div>
+      <button class="submit-btn" id="loginBtn">
+        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+      </button>
+    </div>
+
+    <!-- Admin Panel (Hidden by default) -->
+    <div class="admin-panel" id="adminPanel">
+      <div class="admin-header">
+        <div class="admin-title">
+          <i class="fas fa-user-cog"></i> لوحة تحكم المالك
+        </div>
+        <button class="logout-btn" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="admin-stats">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-shopping-cart"></i>
+          </div>
+          <div class="stat-label">إجمالي الطلبيات</div>
+          <div class="stat-value" id="totalOrders">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-money-bill-wave"></i>
+          </div>
+          <div class="stat-label">إجمالي المدخول</div>
+          <div class="stat-value" id="totalRevenue">0 <small>درهم</small></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-utensils"></i>
+          </div>
+          <div class="stat-label">الأطباق المباعة</div>
+          <div class="stat-value" id="totalDishes">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-chair"></i>
+          </div>
+          <div class="stat-label">الطاولات المشغولة</div>
+          <div class="stat-value" id="occupiedTables">0/20</div>
+        </div>
+      </div>
+
+      <!-- Admin Tabs -->
+      <div class="admin-tabs">
+        <div class="admin-tab active" data-tab="orders">الطلبيات</div>
+        <div class="admin-tab" data-tab="menu">إدارة القائمة</div>
+      </div>
+
+      <!-- Orders Content -->
+      <div class="admin-content active" id="ordersContent">
+        <h3>الطلبيات الحالية</h3>
+        <div class="orders-table-container" id="ordersTable">
+          <!-- Orders will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Menu Management Content -->
+      <div class="admin-content" id="menuContent">
+        <div class="add-item-form">
+          <h3>إضافة عنصر جديد</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>اسم العنصر</label>
+              <input type="text" id="itemName" placeholder="اسم العنصر">
+            </div>
+            <div class="form-group">
+              <label>السعر (درهم)</label>
+              <input type="number" id="itemPrice" placeholder="السعر">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>الصنف</label>
+              <select id="itemCategory">
+                <option value="meals">وجبات</option>
+                <option value="drinks">مشروبات</option>
+                <option value="desserts">حلويات</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>صورة العنصر (رابط)</label>
+              <input type="text" id="itemImage" placeholder="رابط الصورة">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>الوصف</label>
+            <textarea id="itemDescription" placeholder="وصف العنصر" rows="3"></textarea>
+          </div>
+          <button class="submit-btn" id="addItemBtn">
+            <i class="fas fa-plus-circle"></i> إضافة عنصر
+          </button>
+        </div>
+
+        <h3 style="margin-top: 30px;">العناصر الحالية</h3>
+        <div class="menu-items-table" id="menuItemsTable">
+          <!-- Menu items will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shopping Cart Modal -->
+  <div class="cart-modal" id="cartModal">
+    <div class="cart-header">
+      <h3><i class="fas fa-shopping-cart"></i> سلة المشتريات</h3>
+      <button class="close-cart" id="closeCart">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="cart-items">
+      <!-- Cart items will be populated by JavaScript -->
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>الإجمالي:</span>
+        <span id="cartTotal">0 درهم</span>
+      </div>
+      <button class="checkout-btn" id="checkoutBtn">
+        <i class="fas fa-check-circle"></i> تأكيد الطلب
+      </button>
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div class="checkout-modal" id="checkoutModal">
+    <div class="checkout-container">
+      <div class="checkout-header">
+        <h3><i class="fas fa-receipt"></i> تأكيد الطلب</h3>
+      </div>
+      <div class="checkout-body">
+        <div class="form-group">
+          <label><i class="fas fa-table"></i> رقم الطاولة</label>
+          <select id="tableNumber">
+            <option value="">اختر رقم الطاولة</option>
+            <!-- Tables 1 to 20 -->
+            <option value="1">طاولة 1</option>
+            <option value="2">طاولة 2</option>
+            <option value="3">طاولة 3</option>
+            <option value="4">طاولة 4</option>
+            <option value="5">طاولة 5</option>
+            <option value="6">طاولة 6</option>
+            <option value="7">طاولة 7</option>
+            <option value="8">طاولة 8</option>
+            <option value="9">طاولة 9</option>
+            <option value="10">طاولة 10</option>
+            <option value="11">طاولة 11</option>
+            <option value="12">طاولة 12</option>
+            <option value="13">طاولة 13</option>
+            <option value="14">طاولة 14</option>
+            <option value="15">طاولة 15</option>
+            <option value="16">طاولة 16</option>
+            <option value="17">طاولة 17</option>
+            <option value="18">طاولة 18</option>
+            <option value="19">طاولة 19</option>
+            <option value="20">طاولة 20</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-sticky-note"></i> ملاحظات إضافية (اختياري)</label>
+          <textarea id="orderNotes" rows="3" placeholder="ملاحظات خاصة بالطلب"></textarea>
+        </div>
+      </div>
+      <div class="checkout-footer">
+        <button class="modal-btn cancel-btn" id="cancelCheckout">
+          <i class="fas fa-times"></i> إلغاء
+        </button>
+        <button class="modal-btn confirm-btn" id="confirmOrder">
+          <i class="fas fa-check"></i> تأكيد الطلب
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>مطعم البركة</h3>
+        <p>أطباق متنوعة من أشهى المأكولات والحلويات والمشروبات، تجربة طعام لا تنسى</p>
+        <p>نسعى لتقديم أفضل تجربة طعام لعملائنا الكرام بأجود المكونات وأشهى الوصفات</p>
+      </div>
+      <div class="footer-section">
+        <h3>ساعات العمل</h3>
+        <p>يومياً من 10 صباحاً حتى 12 منتصف الليل</p>
+        <p>الجمعة من 1 ظهراً حتى 1 منتصف الليل</p>
+        <p>العطل الرسمية: من 5 مساءً حتى 2 صباحاً</p>
+      </div>
+      <div class="footer-section">
+        <h3>اتصل بنا</h3>
+        <p><i class="fas fa-map-marker-alt"></i> العنوان: شارع المطاعم، مدينة الطعام</p>
+        <p><i class="fas fa-phone"></i> الهاتف: <a href="tel:0698744755">0698744755</a></p>
+        <div class="social-icons">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="copyright">
+      &copy; 2023 مطعم البركة. جميع الحقوق محفوظة.
+    </div>
+  </footer>
+
+  <script>
+    // Sample menu data (70 items)
+    const menuItems = [
+      // Meals (30 items)
+      {
+        id: 1,
+        name: "بيتزا لحم مشوي",
+        price: 45,
+        image: "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "meals",
+        description: "بيتزا مع لحم مشوي وجبنة موزاريلا"
+      },
+      {
+        id: 2,
+        name: "برجر لحم بقري",
+        price: 35,
+        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "meals",
+        description: "برجر لحم بقري مع خضروات طازجة"
+      },
+      {
+        id: 3,
+        name: "دجاج مشوي",
+        price: 40,
+        image: "https://images.unsplash.com/photo-1606755962773-d324e7a7a7b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "meals",
+        description: "دجاج مشوي مع أرز وخضار"
+      },
+      {
+        id: 4,
+        name: "ستيك لحم",
+        price: 65,
+        image: "https://images.unsplash.com/photo-1546964124-0cce460f38ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "meals",
+        description: "ستيك لحم مشوي مع صلصة خاصة"
+      },
+      {
+        id: 5,
+        name: "سوشي متنوع",
+        price: 55,
+        image: "https://images.unsplash.com/photo-1611143669185-af224c5e3252?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80",
+        category: "meals",
+        description: "مجموعة متنوعة من السوشي الياباني"
+      },
+      {
+        id: 6,
+        name: "باستا كريمة",
+        price: 38,
+        image: "https://images.unsplash.com/photo-1608755252453-3cdb32d6e0f2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "meals",
+        description: "باستا مع كريمة الفطر والجبن"
+      },
+      {
+        id: 7,
+        name: "سلطة سيزر",
+        price: 28,
+        image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "meals",
+        description: "سلطة سيزر مع دجاج وخبز محمص"
+      },
+      {
+        id: 8,
+        name: "سمك مشوي",
+        price: 50,
+        image: "https://images.unsplash.com/photo-1601315488950-3b5047998b38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+        category: "meals",
+        description: "سمك مشوي مع صلصة الليمون"
+      },
+      {
+        id: 9,
+        name: "كباب حلة",
+        price: 42,
+        image: "https://images.unsplash.com/photo-1603360946369-dc9bbf814493?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "meals",
+        description: "كباب حلة مع أرز بسمتي"
+      },
+      {
+        id: 10,
+        name: "مقلقل لبناني",
+        price: 36,
+        image: "https://images.unsplash.com/photo-1643363921501-6e1a84c9c0d0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "meals",
+        description: "مقلقل لبناني مع دجاج وخضار"
+      },
+      // Add more meals here...
+      // Drinks (20 items)
+      {
+        id: 31,
+        name: "عصير برتقال",
+        price: 15,
+        image: "https://images.unsplash.com/photo-1613478223719-2ab802602423?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+        category: "drinks",
+        description: "عصير برتقال طازج"
+      },
+      {
+        id: 32,
+        name: "عصير فراولة",
+        price: 18,
+        image: "https://images.unsplash.com/photo-1551024506-0bccd828d307?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1364&q=80",
+        category: "drinks",
+        description: "عصير فراولة طبيعي"
+      },
+      {
+        id: 33,
+        name: "قهوة عربية",
+        price: 12,
+        image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80",
+        category: "drinks",
+        description: "قهوة عربية أصيلة"
+      },
+      {
+        id: 34,
+        name: "شاي بالنعناع",
+        price: 10,
+        image: "https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+        category: "drinks",
+        description: "شاي أخضر مع نعناع طازج"
+      },
+      {
+        id: 35,
+        name: "عصير مانجو",
+        price: 20,
+        image: "https://images.unsplash.com/photo-1626082927389-6cd097cee6a6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "drinks",
+        description: "عصير مانجو طازج"
+      },
+      {
+        id: 36,
+        name: "ميلك شيك فراولة",
+        price: 22,
+        image: "https://images.unsplash.com/photo-1577805947697-1e6ef7d0f011?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1392&q=80",
+        category: "drinks",
+        description: "ميلك شيك فراولة مع كريمة"
+      },
+      {
+        id: 37,
+        name: "سموثي أخضر",
+        price: 25,
+        image: "https://images.unsplash.com/photo-1519996521431-752fce640c8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+        category: "drinks",
+        description: "سموثي خضار وفواكه"
+      },
+      {
+        id: 38,
+        name: "ليمون بالنعناع",
+        price: 15,
+        image: "https://images.unsplash.com/photo-1609354825999-3b3b8b1d2e1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+        category: "drinks",
+        description: "ليمون طازج مع نعناع"
+      },
+      {
+        id: 39,
+        name: "كابتشينو",
+        price: 18,
+        image: "https://images.unsplash.com/photo-1538587888044-79f13ddd7e49?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "drinks",
+        description: "كابتشينو إيطالي"
+      },
+      {
+        id: 40,
+        name: "آيس كوفي",
+        price: 20,
+        image: "https://images.unsplash.com/photo-1551030173-122aabc4489c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "drinks",
+        description: "قهوة مثلجة مع كريمة"
+      },
+      // Add more drinks here...
+      // Desserts (20 items)
+      {
+        id: 51,
+        name: "كيك الشوكولاتة",
+        price: 25,
+        image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1389&q=80",
+        category: "desserts",
+        description: "كيك شوكولاتة غني"
+      },
+      {
+        id: 52,
+        name: "تشيز كيك",
+        price: 28,
+        image: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+        category: "desserts",
+        description: "تشيز كيك بالتوت"
+      },
+      {
+        id: 53,
+        name: "أيس كريم فانيليا",
+        price: 18,
+        image: "https://images.unsplash.com/photo-1560008581-09826d1de69e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1344&q=80",
+        category: "desserts",
+        description: "آيس كريم فانيليا مع صوص"
+      },
+      {
+        id: 54,
+        name: "بسبوسة",
+        price: 15,
+        image: "https://images.unsplash.com/photo-1626082927389-6cd097cee6a6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "desserts",
+        description: "بسبوسة بالقشطة والجوز"
+      },
+      {
+        id: 55,
+        name: "كنافة",
+        price: 22,
+        image: "https://images.unsplash.com/photo-1643363921501-6e1a84c9c0d0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+        category: "desserts",
+        description: "كنافة بالقشطة أو الجبن"
+      },
+      {
+        id: 56,
+        name: "مثلثات جوز",
+        price: 20,
+        image: "https://images.unsplash.com/photo-1612203985729-70726954388c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80",
+        category: "desserts",
+        description: "مثلثات جوز بالعسل"
+      },
+      {
+        id: 57,
+        name: "كوكيز شوكولاتة",
+        price: 16,
+        image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1365&q=80",
+        category: "desserts",
+        description: "كوكيز شوكولاتة بالجوز"
+      },
+      {
+        id: 58,
+        name: "أم علي",
+        price: 24,
+        image: "https://images.unsplash.com/photo-1627834377411-8da5f4f09ce8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1482&q=80",
+        category: "desserts",
+        description: "أم علي مع كريمة ومكسرات"
+      },
+      {
+        id: 59,
+        name: "مهلبية",
+        price: 15,
+        image: "https://images.unsplash.com/photo-1603532648955-a039f2e364da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+        category: "desserts",
+        description: "مهلبية بالفستق الحلبي"
+      },
+      {
+        id: 60,
+        name: "كاسترد",
+        price: 17,
+        image: "https://images.unsplash.com/photo-1630911180626-1e9b0d5d19a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80",
+        category: "desserts",
+        description: "كاسترد مع فواكه طازجة"
+      },
+      // Add more desserts here...
+    ];
+    // Shopping cart
+    let cart = [];
+    // Admin state
+    let isAdminLoggedIn = false;
+    // Orders data
+    let orders = JSON.parse(localStorage.getItem('restaurant_orders')) || [];
+    // DOM Elements
+    const menuGrid = document.getElementById('menuGrid');
+    const cartIcon = document.getElementById('cartIcon');
+    const cartModal = document.getElementById('cartModal');
+    const closeCart = document.getElementById('closeCart');
+    const cartItems = document.querySelector('.cart-items');
+    const cartTotal = document.getElementById('cartTotal');
+    const cartCount = document.querySelector('.cart-count');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const checkoutModal = document.getElementById('checkoutModal');
+    const cancelCheckout = document.getElementById('cancelCheckout');
+    const confirmOrder = document.getElementById('confirmOrder');
+    const tableNumber = document.getElementById('tableNumber');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const adminTabs = document.querySelectorAll('.admin-tab');
+    const adminContents = document.querySelectorAll('.admin-content');
+    const adminLogin = document.getElementById('adminLogin');
+    const adminPanel = document.getElementById('adminPanel');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const adminLink = document.getElementById('adminLink');
+    const ordersTable = document.getElementById('ordersTable');
+    const totalOrders = document.getElementById('totalOrders');
+    const totalRevenue = document.getElementById('totalRevenue');
+    const totalDishes = document.getElementById('totalDishes');
+    const occupiedTables = document.getElementById('occupiedTables');
+    const addItemBtn = document.getElementById('addItemBtn');
+    const menuItemsTable = document.getElementById('menuItemsTable');
+    // Render menu items
+    function renderMenuItems(category = 'all') {
+      menuGrid.innerHTML = '';
+      const filteredItems = category === 'all' ?
+        menuItems :
+        menuItems.filter(item => item.category === category);
+      filteredItems.forEach(item => {
+        const menuItem = document.createElement('div');
+        menuItem.className = 'menu-item';
+        menuItem.innerHTML = `
+                    <div class="item-badge">${item.category === 'meals' ? 'وجبة' : item.category === 'drinks' ? 'مشروب' : 'حلوى'}</div>
+                    <div class="item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="item-details">
+                        <div class="item-title">
+                            <span>${item.name}</span>
+                            <span class="item-price">${item.price} درهم</span>
+                        </div>
+                        <p class="item-description">${item.description}</p>
+                        <button class="add-to-cart" data-id="${item.id}">
+                            <i class="fas fa-plus"></i> إضافة للسلة
+                        </button>
+                    </div>
+                `;
+        menuGrid.appendChild(menuItem);
+      });
+      // Add event listeners to add to cart buttons
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const id = parseInt(e.target.getAttribute('data-id'));
+          addToCart(id);
+        });
+      });
+    }
+    // Add item to cart
+    function addToCart(itemId) {
+      const item = menuItems.find(i => i.id === itemId);
+      const existingItem = cart.find(i => i.id === itemId);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          image: item.image,
+          quantity: 1
+        });
+      }
+      updateCart();
+      showNotification(`${item.name} تمت إضافته للسلة`);
+    }
+    // Update cart UI
+    function updateCart() {
+      cartItems.innerHTML = '';
+      let total = 0;
+      let count = 0;
+      if (cart.length === 0) {
+        cartItems.innerHTML = '<p style="text-align: center; padding: 40px 20px; color: var(--gray);">السلة فارغة</p>';
+        cartCount.textContent = '0';
+        cartTotal.textContent = '0 درهم';
+        return;
+      }
+      cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        count += item.quantity;
+        const cartItem = document.createElement('div');
+        cartItem.className = 'cart-item';
+        cartItem.innerHTML = `
+                    <div class="cart-item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-price">${item.price} درهم</div>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn decrease" data-id="${item.id}">-</button>
+                            <span class="quantity-value">${item.quantity}</span>
+                            <button class="quantity-btn increase" data-id="${item.id}">+</button>
+                        </div>
+                        <button class="remove-item" data-id="${item.id}">
+                            <i class="fas fa-trash"></i> إزالة
+                        </button>
+                    </div>
+                `;
+        cartItems.appendChild(cartItem);
+      });
+      cartTotal.textContent = `${total} درهم`;
+      cartCount.textContent = count;
+      // Add event listeners for quantity buttons
+      document.querySelectorAll('.decrease').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const id = parseInt(e.target.getAttribute('data-id'));
+          decreaseQuantity(id);
+        });
+      });
+      document.querySelectorAll('.increase').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const id = parseInt(e.target.getAttribute('data-id'));
+          increaseQuantity(id);
+        });
+      });
+      document.querySelectorAll('.remove-item').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const id = parseInt(e.target.getAttribute('data-id'));
+          removeFromCart(id);
+        });
+      });
+    }
+    // Decrease item quantity
+    function decreaseQuantity(itemId) {
+      const item = cart.find(i => i.id === itemId);
+      if (item.quantity > 1) {
+        item.quantity -= 1;
+      } else {
+        cart = cart.filter(i => i.id !== itemId);
+      }
+      updateCart();
+    }
+    // Increase item quantity
+    function increaseQuantity(itemId) {
+      const item = cart.find(i => i.id === itemId);
+      item.quantity += 1;
+      updateCart();
+    }
+    // Remove item from cart
+    function removeFromCart(itemId) {
+      cart = cart.filter(i => i.id !== itemId);
+      updateCart();
+      const item = menuItems.find(i => i.id === itemId);
+      showNotification(`${item.name} تمت إزالته من السلة`);
+    }
+    // Show notification
+    function showNotification(message) {
+      // Remove existing notifications
+      document.querySelectorAll('.notification').forEach(n => n.remove());
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.innerHTML = `
+                <i class="fas fa-check-circle"></i> ${message}
+            `;
+      notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+                color: white;
+                padding: 15px 25px;
+                border-radius: var(--border-radius);
+                z-index: 1000;
+                box-shadow: var(--shadow-lg);
+                animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.5s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 1.1rem;
+            `;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+    // Admin login
+    function loginAdmin() {
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+      if (username === 'admin' && password === 'password123') {
+        isAdminLoggedIn = true;
+        adminLogin.style.display = 'none';
+        adminPanel.classList.add('active');
+        showNotification('تم تسجيل الدخول بنجاح');
+        updateAdminStats();
+        renderOrders();
+        renderMenuItemsTable();
+      } else {
+        showNotification('اسم المستخدم أو كلمة المرور غير صحيحة');
+      }
+    }
+    // Admin logout
+    function logoutAdmin() {
+      isAdminLoggedIn = false;
+      adminPanel.classList.remove('active');
+      adminLogin.style.display = 'block';
+      document.getElementById('adminUsername').value = '';
+      document.getElementById('adminPassword').value = '';
+      showNotification('تم تسجيل الخروج بنجاح');
+    }
+    // Update admin statistics
+    function updateAdminStats() {
+      totalOrders.textContent = orders.length;
+      const revenue = orders.reduce((sum, order) => sum + order.total, 0);
+      totalRevenue.textContent = revenue.toLocaleString() + ' درهم';
+      const dishes = orders.reduce((sum, order) => {
+        return sum + order.items.reduce((itemSum, item) => itemSum + item.quantity, 0);
+      }, 0);
+      totalDishes.textContent = dishes;
+      const occupied = new Set(orders.filter(o => o.status !== 'completed').map(o => o.table)).size;
+      occupiedTables.textContent = `${occupied}/20`;
+    }
+    // Render orders in admin panel
+    function renderOrders() {
+      ordersTable.innerHTML = '';
+      if (orders.length === 0) {
+        ordersTable.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--gray);">لا توجد طلبات حالية</p>';
+        return;
+      }
+      const table = document.createElement('table');
+      table.className = 'orders-table';
+      table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>رقم الطلب</th>
+                        <th>الطاولة</th>
+                        <th>المجموع</th>
+                        <th>الحالة</th>
+                        <th>الوقت</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${orders.map(order => `
+                        <tr data-id="${order.id}">
+                            <td>#${order.id}</td>
+                            <td>${order.table}</td>
+                            <td>${order.total} درهم</td>
+                            <td>
+                                <span class="order-status ${order.status === 'pending' ? 'status-pending' : order.status === 'confirmed' ? 'status-confirmed' : 'status-completed'}">
+                                    ${order.status === 'pending' ? 'قيد الانتظار' : order.status === 'confirmed' ? 'تم التأكيد' : 'مكتمل'}
+                                </span>
+                            </td>
+                            <td>${formatTime(order.timestamp)}</td>
+                            <td>
+                                ${order.status === 'pending' ? `
+                                    <button class="action-btn btn-confirm" onclick="changeOrderStatus(${order.id}, 'confirmed')">
+                                        <i class="fas fa-check"></i> تأكيد
+                                    </button>
+                                ` : ''}
+                                ${order.status !== 'completed' ? `
+                                    <button class="action-btn btn-complete" onclick="changeOrderStatus(${order.id}, 'completed')">
+                                        <i class="fas fa-check-circle"></i> إكمال
+                                    </button>
+                                ` : ''}
+                                <button class="action-btn btn-delete" onclick="deleteOrder(${order.id})">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="6">
+                                <div class="order-details">
+                                    <h4>تفاصيل الطلب:</h4>
+                                    ${order.items.map(item => `
+                                        <div class="order-item">
+                                            <span>${item.name}</span>
+                                            <span>${item.quantity} × ${item.price} درهم</span>
+                                        </div>
+                                    `).join('')}
+                                    ${order.notes ? `<p><strong>ملاحظات:</strong> ${order.notes}</p>` : ''}
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+      ordersTable.appendChild(table);
+    }
+    // Format time for display
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString('ar-EG');
+    }
+    // Change order status
+    function changeOrderStatus(orderId, status) {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        order.status = status;
+        saveOrders();
+        renderOrders();
+        updateAdminStats();
+        showNotification(`تم تحديث حالة الطلب #${orderId} إلى ${status === 'pending' ? 'قيد الانتظار' : status === 'confirmed' ? 'تم التأكيد' : 'مكتمل'}`);
+      }
+    }
+    // Delete order
+    function deleteOrder(orderId) {
+      orders = orders.filter(o => o.id !== orderId);
+      saveOrders();
+      renderOrders();
+      updateAdminStats();
+      showNotification(`تم حذف الطلب #${orderId}`);
+    }
+    // Save orders to localStorage
+    function saveOrders() {
+      localStorage.setItem('restaurant_orders', JSON.stringify(orders));
+    }
+    // Render menu items in admin panel
+    function renderMenuItemsTable() {
+      menuItemsTable.innerHTML = '';
+      const table = document.createElement('table');
+      table.className = 'orders-table';
+      table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>الصورة</th>
+                        <th>الاسم</th>
+                        <th>الصنف</th>
+                        <th>السعر</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${menuItems.map(item => `
+                        <tr data-id="${item.id}">
+                            <td><img src="${item.image}" width="60" height="60" style="border-radius: 8px; object-fit: cover;"></td>
+                            <td>${item.name}</td>
+                            <td>${item.category === 'meals' ? 'وجبات' : item.category === 'drinks' ? 'مشروبات' : 'حلويات'}</td>
+                            <td>${item.price} درهم</td>
+                            <td>
+                                <button class="action-btn" style="background: linear-gradient(135deg, #2196f3 0%, #1e88e5 100%); color: white;" onclick="editMenuItem(${item.id})">
+                                    <i class="fas fa-edit"></i> تعديل
+                                </button>
+                                <button class="action-btn btn-delete" onclick="deleteMenuItem(${item.id})">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+      menuItemsTable.appendChild(table);
+    }
+    // Add new menu item
+    function addMenuItem() {
+      const name = document.getElementById('itemName').value;
+      const price = parseFloat(document.getElementById('itemPrice').value);
+      const category = document.getElementById('itemCategory').value;
+      const image = document.getElementById('itemImage').value;
+      const description = document.getElementById('itemDescription').value;
+      if (!name || !price || !category || !image) {
+        showNotification('الرجاء ملء جميع الحقول المطلوبة');
+        return;
+      }
+      const newItem = {
+        id: menuItems.length > 0 ? Math.max(...menuItems.map(i => i.id)) + 1 : 1,
+        name,
+        price,
+        category,
+        image,
+        description
+      };
+      menuItems.push(newItem);
+      renderMenuItemsTable();
+      // Clear form
+      document.getElementById('itemName').value = '';
+      document.getElementById('itemPrice').value = '';
+      document.getElementById('itemImage').value = '';
+      document.getElementById('itemDescription').value = '';
+      showNotification('تمت إضافة العنصر الجديد بنجاح');
+    }
+    // Edit menu item
+    function editMenuItem(itemId) {
+      const item = menuItems.find(i => i.id === itemId);
+      if (item) {
+        // For simplicity, we'll just fill the form with item data
+        document.getElementById('itemName').value = item.name;
+        document.getElementById('itemPrice').value = item.price;
+        document.getElementById('itemCategory').value = item.category;
+        document.getElementById('itemImage').value = item.image;
+        document.getElementById('itemDescription').value = item.description;
+        showNotification('يمكنك تعديل العنصر في النموذج أعلاه');
+      }
+    }
+    // Delete menu item
+    function deleteMenuItem(itemId) {
+      if (confirm('هل أنت متأكد من حذف هذا العنصر؟')) {
+        menuItems = menuItems.filter(i => i.id !== itemId);
+        renderMenuItemsTable();
+        showNotification('تم حذف العنصر بنجاح');
+      }
+    }
+    // Place new order
+    function placeOrder() {
+      const table = tableNumber.value;
+      const notes = document.getElementById('orderNotes').value;
+      if (!table) {
+        showNotification('الرجاء اختيار رقم الطاولة');
+        return;
+      }
+      if (cart.length === 0) {
+        showNotification('السلة فارغة، أضف بعض العناصر أولاً');
+        return;
+      }
+      const newOrder = {
+        id: orders.length > 0 ? Math.max(...orders.map(o => o.id)) + 1 : 1,
+        table,
+        items: [...cart],
+        total: cart.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+        status: 'pending',
+        timestamp: Date.now(),
+        notes
+      };
+      orders.push(newOrder);
+      saveOrders();
+      // Reset cart and close modals
+      cart = [];
+      updateCart();
+      cartModal.classList.remove('open');
+      checkoutModal.classList.remove('open');
+      tableNumber.value = '';
+      document.getElementById('orderNotes').value = '';
+      showNotification('تم تأكيد طلبك بنجاح، شكراً لكم!');
+      // Update admin panel if open
+      if (isAdminLoggedIn) {
+        updateAdminStats();
+        renderOrders();
+      }
+    }
+    // Initialize the page
+    function init() {
+      renderMenuItems();
+      // Tab buttons event listeners
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          renderMenuItems(button.getAttribute('data-category'));
+        });
+      });
+      // Admin tabs event listeners
+      adminTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          adminTabs.forEach(t => t.classList.remove('active'));
+          adminContents.forEach(c => c.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(`${tab.getAttribute('data-tab')}Content`).classList.add('active');
+        });
+      });
+      // Cart event listeners
+      cartIcon.addEventListener('click', () => {
+        cartModal.classList.add('open');
+      });
+      closeCart.addEventListener('click', () => {
+        cartModal.classList.remove('open');
+      });
+      checkoutBtn.addEventListener('click', () => {
+        if (cart.length === 0) {
+          showNotification('السلة فارغة، أضف بعض العناصر أولاً');
+          return;
+        }
+        cartModal.classList.remove('open');
+        checkoutModal.classList.add('open');
+      });
+      cancelCheckout.addEventListener('click', () => {
+        checkoutModal.classList.remove('open');
+      });
+      confirmOrder.addEventListener('click', placeOrder);
+      // Admin event listeners
+      loginBtn.addEventListener('click', loginAdmin);
+      logoutBtn.addEventListener('click', logoutAdmin);
+      adminLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!isAdminLoggedIn) {
+          document.getElementById('adminLogin').scrollIntoView({
+            behavior: 'smooth'
+          });
+        } else {
+          document.getElementById('adminPanel').scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+      // Add keyboard event for admin password field
+      document.getElementById('adminPassword').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          loginAdmin();
+        }
+      });
+      // Add menu item event listener
+      addItemBtn.addEventListener('click', addMenuItem);
+    }
+    // Make functions global for inline event handlers
+    window.changeOrderStatus = changeOrderStatus;
+    window.deleteOrder = deleteOrder;
+    window.editMenuItem = editMenuItem;
+    window.deleteMenuItem = deleteMenuItem;
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+
+</html>
